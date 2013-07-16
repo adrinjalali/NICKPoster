@@ -51,9 +51,8 @@
 \newcommand{\ghool}{\cellcolor{independentnode}}
 
 \title[Gene Expression, PPI Network, Classification]{Analyzing How Protein Interaction Networks Improve Classification Performance in Gene Expression Data Analysis}
-\author{Adrin Jalali}
-% \\ \small{Supervised by: Nico Pfeifer}}
-\institute{MPI for Informatics}
+\author{Adrin Jalali and Nico Pfeifer}
+\institute{Department of Computational Biology and Applied Algorithmics\\Max Planck Institute for Informatics\\Saarbrücken, Germany}
 %\date{\today} 
 \date{}
 %\titlegraphic{\includegraphics[width=4cm]{mpi-logo}}
@@ -64,56 +63,72 @@
     \raggedright
     \includegraphics[width=0.2\textwidth]{mpi-logo}
   \end{textblock*}
-  \begin{textblock*}{\paperwidth}(0.8\textwidth,0.12\textheight)
+  \begin{textblock*}{\paperwidth}(0.8\textwidth,0.11\textheight)
     \raggedright
     \includegraphics[width=0.1\textwidth]{mpg-logo}
   \end{textblock*}
 
-  \begin{columns}[T]
-    \begin{column}{0.66\textwidth}
-      \mytitle{Data}
-        \begin{columns}
-          \begin{column}{0.5\textwidth}
-            \center
-            \begin{figure}
-              \includegraphics[height=20cm]{vantveer-summary}
-              \caption{\tiny
-                1. Input: Gene expression data
-                2. Output: Prognosis (Poor vs. Good), Metastases
-                3. Goal: Classify and find important genes
-                4. Issue: Hard to classify due to huge number of features (genes) compared to number of samples ($\sim 22000 \gg 98$)\\
-                - Laura J. van 't Veer et.al. Nature, (2002)}
-              \note{a, Two-dimensional presentation of transcript ratios for 98 breast tumours. There were 4,968 significant genes across the group. Each row represents a tumour and each column a single gene. As shown in the colour bar, red indicates upregulation, green downregulation, black no change, and grey no data available. The yellow line marks the subdivision into two dominant tumour clusters. b, Selected clinical data for the 98 patients in a: BRCA1 germline mutation carrier (or sporadic patient), ER expression, tumour grade 3 (versus grade 1 and 2), lymphocytic infiltrate, angioinvasion, and metastasis status. White indicates positive, black negative and grey denotes tumours derived from BRCA1 germline carriers who were excluded from the metastasis evaluation. The cluster below the yellow line consists of 36 tumours, of which 34 are ER negative (total 39 ER-negative) and 16 are carriers of the BRCA1 mutation (total 18). c, Enlarged portion from a containing a group of genes that co-regulate with the ER- gene (ESR1). Each gene is labelled by its gene name or accession number from GenBank. Contig ESTs ending with RC are reverse-complementary of the named contig EST. d, Enlarged portion from a containing a group of co-regulated genes that are the molecular reflection of extensive lymphocytic infiltrate, and comprise a set of genes expressed in T and B cells. (Gene annotation as in c.)}
-              \note{http://www.nature.com/nature/journal/v415/n6871/full/415530a.html}
-            \end{figure}
-          \end{column}
-
-          \begin{column}{0.5\textwidth}
-            \begin{figure}
-              \includegraphics[width=0.6\textwidth]{yeastProteinInteractionNetwork}
-              \caption{\tiny Yeast protein interaction network. The colour of a node indicates the phenotypic effect of removing the corresponding protein ({\color{red}red} = lethal, {\color{green}green} = non-lethal, {\color{orange}orange} = slow growth, {\color{yellow}yellow} = unknown), A. BarabÃ¡si, Z. Oltvai, Nature Reviews Genetics, (2004)}
-            \end{figure}
-            \note{http://www.nature.com/nrg/journal/v5/n2/fig_tab/nrg1272_F2.html}
-          \end{column}
-        \end{columns}
+  \mytitle{Motivation}
+  \begin{columns}
+    \begin{column}{0.3\textwidth}
+      \center
+      \begin{figure}
+        \includegraphics[height=20cm]{vantveer-summary}
+        \caption{\tiny Unsupervised two-dimensional cluster analysis of 98 breast tumours [1]}
+        \note{a, Two-dimensional presentation of transcript ratios for 98 breast tumours. There were 4,968 significant genes across the group. Each row represents a tumour and each column a single gene. As shown in the colour bar, red indicates upregulation, green downregulation, black no change, and grey no data available. The yellow line marks the subdivision into two dominant tumour clusters. b, Selected clinical data for the 98 patients in a: BRCA1 germline mutation carrier (or sporadic patient), ER expression, tumour grade 3 (versus grade 1 and 2), lymphocytic infiltrate, angioinvasion, and metastasis status. White indicates positive, black negative and grey denotes tumours derived from BRCA1 germline carriers who were excluded from the metastasis evaluation. The cluster below the yellow line consists of 36 tumours, of which 34 are ER negative (total 39 ER-negative) and 16 are carriers of the BRCA1 mutation (total 18). c, Enlarged portion from a containing a group of genes that co-regulate with the ER- gene (ESR1). Each gene is labelled by its gene name or accession number from GenBank. Contig ESTs ending with RC are reverse-complementary of the named contig EST. d, Enlarged portion from a containing a group of co-regulated genes that are the molecular reflection of extensive lymphocytic infiltrate, and comprise a set of genes expressed in T and B cells. (Gene annotation as in c.)}
+        \note{http://www.nature.com/nature/journal/v415/n6871/full/415530a.html}
+      \end{figure}
+    \end{column}
+    
+    \begin{column}{0.3\textwidth}
+        \footnotesize
+        Problem statement:
+      \begin{itemize}
+          \item Input: Gene expression data
+          \item Output: Prognosis (Poor vs. Good), Metastases
+          \item Goal: Classify samples and find important genes
+          \item Issue: Hard to classify due to large number of features (genes) compared to number of samples ($\sim 22000 \gg 98$)
+      \end{itemize}
     \end{column}
 
     \begin{column}{0.3\textwidth}
-      \mytitle{Method}
-      \vspace{1cm}
-      \begin{enumerate}
-        \footnotesize
-        \item SVM modified objective function
+      \begin{figure}
+        \includegraphics[width=0.8\textwidth]{yeastProteinInteractionNetwork}
+        \caption{\tiny Yeast protein interaction network. The colour of a node indicates the phenotypic effect of removing the corresponding protein ({\color{red}red} = lethal, {\color{green}green} = non-lethal, {\color{orange}orange} = slow growth, {\color{yellow}yellow} = unknown) [2]}
+      \end{figure}
+      \note{http://www.nature.com/nrg/journal/v5/n2/fig_tab/nrg1272_F2.html}
+    \end{column}
+  \end{columns}
+
+  \mytitle{Method}
+    \begin{columns}
+%      \begin{column}{0.25\textwidth}
+%        %\frametitle{NICK Performance Summary}
+%        \begin{figure}
+%          \includegraphics[width=0.9\textwidth]{NICK-perfs}
+%          \caption{\tiny          1. Co-expressed genes tend to be close in the PPI-Network.
+%            2. Exploit this fact to modify the SVM objective function - called NICK. Ofer Lavi, et.al., Journal of Computational Biology, (2012)
+%          }
+%        \end{figure}
+%        %\mycite{Ofer Lavi, et.al., Journal of Computational Biology, (2012)}
+%        \note{http://online.liebertpub.com/doi/full/10.1089/cmb.2012.0065}
+%      \end{column}
+
+      \begin{column}{0.3\textwidth}
+        \vspace{1cm}
+        \begin{enumerate}
+          \footnotesize
+        \item SVM modified objective function [3]
           \tiny
           \begin{center}
             \begin{align*}
-            &\min_{\mathbf{w}, w_0}\left\{\frac{1}{2}\|\mathbf{w}\|^2 + \frac{1}{2}\beta\sum_{(j,k)\in E}(w_j-w_k)^2\right\}\\
-          \text{s.t.:} &\\
-            &\forall i \in \{1,\cdots,n\} : (\mathbf{w}\mathbf{x}_i+w_0)y_i\geq 1
+              &\min_{\mathbf{w}, w_0}\left\{\frac{1}{2}\|\mathbf{w}\|^2 + \frac{1}{2}\beta\sum_{(j,k)\in E}(w_j-w_k)^2\right\}\\
+              \text{s.t.:} &\\
+              &\forall i \in \{1,\cdots,n\} : (\mathbf{w}\mathbf{x}_i+w_0)y_i\geq 1
             \end{align*}
           \end{center}
-        
-        \footnotesize
+          
+          \footnotesize
         \item Dual Problem
           \tiny
           \begin{center}
@@ -127,33 +142,19 @@
             \end{align*}
           \end{center}
 
-        \footnotesize
+          \footnotesize
         \item Dual to Primal
           \tiny
           \begin{center}
             $\mathbf{w} = (\mathbf{I} + \beta \mathbf{B})^{-1} \sum_{i = 1}^n \alpha_i y_i \mathbf{x}_i$
           \end{center}
-          \end{enumerate}
-    \end{column}
-  \end{columns}
-
-  \mytitle{Method (cntd.)}
-    \begin{columns}
-      \begin{column}{0.25\textwidth}
-        %\frametitle{NICK Performance Summary}
-        \begin{figure}
-          \includegraphics[width=0.9\textwidth]{NICK-perfs}
-          \caption{\tiny          1. Co-expressed genes tend to be close in the PPI-Network.
-            2. Exploit this fact to modify the SVM objective function - called NICK. Ofer Lavi, et.al., Journal of Computational Biology, (2012)
-          }
-        \end{figure}
-        %\mycite{Ofer Lavi, et.al., Journal of Computational Biology, (2012)}
-        \note{http://online.liebertpub.com/doi/full/10.1089/cmb.2012.0065}
+        \end{enumerate}
       \end{column}
 
       \begin{column}{0.3\textwidth}
-        \begin{itemize}
           \footnotesize
+        What we do:
+        \begin{itemize}
           \item Reverse engineer the learned machine to extract important genes after using the network information.
           \item Solve SVM problem for original and transformed data.
           \item Calculate $\mathbf{w}$ for both models.
@@ -164,17 +165,17 @@
       \end{column}
       %\mycite{Ofer Lavi, et.al., Journal of Computational Biology, (2012)}
 
-      \begin{column}{0.35\textwidth}
+      \begin{column}{0.3\textwidth}
         %\frametitle{Synthesize Data}
         \begin{figure}
           \includegraphics[width=0.8\textwidth]{synthesized-1slide}
           \caption{\tiny {\color{blue}Blue}: random gene, {\color{orange}Orange}: Signal node being a member of a pathway of signal nodes, {\color{yellow}Yellow}: A lonely signal node
-        - Signal nodes (genes): $ f(n) = \left\{ 
+        \\- Signal nodes (genes): $ f(n) = \left\{ 
           \begin{array}{l l}
             N(-\mu, 1) & \quad \text{if $n$ is in class $1$}\\
             N(\mu, 1) & \quad \text{if $n$ is in class $2$}
           \end{array} \right.$
-        - Random nodes (non-informative genes): $f(n) = N(0, 1) $
+        \\- Random nodes (non-informative genes): $f(n) = N(0, 1) $
           }
         \end{figure}
       \end{column}
@@ -182,7 +183,7 @@
   
   \mytitle{Results}
     \begin{columns}
-      \begin{column}{0.25\textwidth}
+      \begin{column}{0.3\textwidth}
         %\frametitle{Synthesized Data Easy Scenario}
         \begin{figure}
           \includegraphics[width=\textwidth]{synthesized-easy}
@@ -258,9 +259,17 @@
             \end{tabular}
           \end{column}
         \end{columns}
+        \center{\tiny
+        \begin{tabular}{| c c |}
+          \hline
+          AUC (Original): & 60.6 \\ 
+          AUC (Transformed): & 62.4 \\
+          wc p-value (paired): & 5.669e-09 \\ \hline
+        \end{tabular}
+        }
       \end{column}
 
-      \begin{column}{0.25\textwidth}
+      \begin{column}{0.3\textwidth}
         %\frametitle{Synthesized Data Medium Scenario}
         \begin{figure}
           \includegraphics[width=\textwidth]{synthesized-medium}
@@ -336,9 +345,17 @@
             \end{tabular}
           \end{column}
         \end{columns}
+        \center{\tiny
+        \begin{tabular}{| c c |}
+          \hline
+          AUC (Original): & 60.1 \\ 
+          AUC (Transformed): & 61.5 \\ 
+          wc p-value (paired): & 1.383e-06 \\ \hline
+        \end{tabular}
+        }
       \end{column}
 
-      \begin{column}{0.25\textwidth}
+      \begin{column}{0.3\textwidth}
         \begin{figure}
           \includegraphics[width=\textwidth]{synthesized-hard}
           \caption{\tiny Hard}
@@ -413,82 +430,30 @@
             \end{tabular}
           \end{column}
         \end{columns}
+        \center{\tiny
+        \begin{tabular}{| c c |}
+          \hline
+          AUC (Original): & 60.2 \\ 
+          AUC (Transformed): & 62.5 \\ 
+          wc p-value (paired): & 8.151e-13 \\ \hline
+        \end{tabular}
+        }
       \end{column}
 
-      \begin{column}{0.25\textwidth}
-        \center
-        \scriptsize
-        \begin{figure}
-        \begin{tabular}{| c c |}
-          \multicolumn{2}{c}{Easy} \\ 
-          \midrule
-          AUC (Original): & 60.6 \\ 
-          AUC (Transformed): & 62.4 \\
-          wc p-value (paired): & 5.669e-09 \\ 
-          \toprule
-          \multicolumn{2}{c}{Medium} \\ 
-          \midrule
-          AUC (Original): & 60.1 \\ 
-          AUC (Transformed): & 61.5 \\ 
-          wc p-value (paired): & 1.383e-06 \\ 
-          \toprule
-          \multicolumn{2}{c}{Hard} \\ 
-          \midrule
-          AUC (Original): & 60.6 \\ 
-          AUC (Transformed): & 62.4 \\ 
-          wc p-value (paired): & 5.669e-09 \\ \hline
-        \end{tabular}
-        \caption{\footnotesize Performance summary of three cases}
-        \end{figure}
-      \end{column}
     \end{columns}
 
+    \vspace{1cm}
+      \mytitle{References and Acknowledgment}
     \begin{columns}[T]
+%      \left
       \begin{column}{0.8\textwidth}
-        \vspace{1cm}
-        \mytitle{Next... }
-        \begin{columns}
-          \begin{column}{0.3\textwidth}
-            \begin{itemize}
-              \footnotesize
-            \item Estimate gene expression value probability distributions for samples of class A. 
-            \item For each sample in class A and B:
-              \begin{itemize}
-                \scriptsize
-              \item Weight genes according to their distance from means of estimated distributions.
-              \item Extract higher weighted parts of generated network.
-              \end{itemize}
-            \item Use a graph kernel for labeled graphs to classify extracted graphs.
-            \end{itemize}
-          \end{column}
-          \begin{column}{0.3\textwidth}
-            \begin{itemize}
-              \footnotesize
-            \item Random Walks ($A^k$: number of walks of length $k$)
-            \item Sub-Tree Kernels
-            \item Shortest Paths Kernels (1-shortest path, k-shortest paths)
-            \item Graphlet Kernels (Isomorphism proved for $n = k + 1 , n \le 11$)
-            \item Laplacian Matrix - Eigenvalues ($\text{Isomorph}(G_1, G_2) \iff \exists P: B(G_1) = P^tB(G_2)P$), \\ number of connected components = number of $\lambda_i = 0$
-            \end{itemize}
-          \end{column}
-          \begin{column}{0.3\textwidth}
-            \begin{figure}
-              \includegraphics[width=0.7\textwidth]{weighted-1}\\
-              \includegraphics[width=0.7\textwidth]{weighted-2}
-              \caption{\footnotesize Sample graphs of two classes}
-            \end{figure}
-          \end{column}
-        \end{columns}
-      \end{column}
-      \begin{column}{0.2\textwidth}
-        \mytitle{References and Acknowledgment}
         \tiny
         Acknowledgment:\\
-        Prof. Dr. Dr. Thomas Lengauer, Dr. Nico Pfeifer, Sarvesh Nimkubh, Nora Speicher, Anna Feldmann.\\
+        Prof. Dr. Dr. Thomas Lengauer, Sarvesh Nikumbh, Nora Speicher, Anna Feldmann.\\
         References:\\
         1. van't Veer, Laura J., et al. "Gene expression profiling predicts clinical outcome of breast cancer." nature 415.6871 (2002): 530-536.\\
-        2. Lavi, Ofer, Gideon Dror, and Ron Shamir. "Network-induced classification kernels for gene expression profile analysis." Journal of Computational Biology 19.6 (2012): 694-709.\\
-        3. Barabási, Albert-László, and Zoltan N. Oltvai. "Network biology: understanding the cell's functional organization." Nature Reviews Genetics 5.2 (2004): 101-113.
+        2. Barabási, Albert-László, and Zoltan N. Oltvai. "Network biology: understanding the cell's functional organization." Nature Reviews Genetics 5.2 (2004): 101-113.\\
+        3. Lavi, Ofer, Gideon Dror, and Ron Shamir. "Network-induced classification kernels for gene expression profile analysis." Journal of Computational Biology 19.6 (2012): 694-709.\\
       \end{column}
     \end{columns}
   \end{frame}
